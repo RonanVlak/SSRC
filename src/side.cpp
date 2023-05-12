@@ -8,6 +8,9 @@ class side
 private:
     cubie cubies[8];
     std::string orientation = "";
+    std::string sideColour = "";
+
+    
 public:
     side();
     side(cubie cubies[8], std::string _orientation);
@@ -15,6 +18,9 @@ public:
 
     void setSide(cubie cubies[8]);
     cubie getCubie(int nr);
+
+    void setSideColour(std::string _sideColour);
+    std::string getSideColour();
 
     void setOrientation(std::string _orientation);
     std::string getOrientation();
@@ -40,6 +46,14 @@ side::~side()
 
 cubie side::getCubie(int nr){
     return cubies[nr];
+}
+
+void side::setSideColour(std::string _sideColour){
+    sideColour = _sideColour;
+}
+
+std::string side::getSideColour(){
+    return sideColour; 
 }
 
 void side:: setOrientation(std::string _orientation){
