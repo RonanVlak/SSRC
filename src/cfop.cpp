@@ -142,16 +142,16 @@ void cfop::solveCube()
     std::cout << "CROSS PHASE COMPLETED. START FIRST LAYER." << std::endl;
 	firstLayer();
     printCube();
-    //std::cout << "FIRST LAYER PHASE COMPLETED. START SECOND LAYER." << std::endl;
-	//secondLayer();
-    //printCube();
-    //std::cout << "F2L PHASE COMPLETED. START OLL." << std::endl;
-	//oll();
-    //printCube();
-    //std::cout << "OLL PHASE COMPLETED. START MATCHING YELLOW CROSS COLORS." << std::endl;
-    //yellowCrossColors();
-    //printCube();
-    //std::cout << "YELLOW CROSS COLORS COMPLETED. START PLLPART1." << std::endl;
+    std::cout << "FIRST LAYER PHASE COMPLETED. START SECOND LAYER." << std::endl;
+	secondLayer();
+    printCube();
+    std::cout << "F2L PHASE COMPLETED. START OLL." << std::endl;
+	oll();
+    printCube();
+    std::cout << "OLL PHASE COMPLETED. START MATCHING YELLOW CROSS COLORS." << std::endl;
+    yellowCrossColors();
+    printCube();
+    std::cout << "YELLOW CROSS COLORS COMPLETED. START PLLPART1." << std::endl;
     //pllPart1();
     //printCube();
     //std::cout << "PLLPART1 COMPLETED. START PLLPART2." << std::endl;
@@ -728,9 +728,48 @@ void cfop::oll() // create yellow cross
 }
 
 
-void cfop::yellowCrossColors()
-{
+
+void cfop::yellowCrossColors() {
+    std::string yellowCrossCubies[4] = { "O2", "B2", "R2", "G2" };
+    bool matchingColors = false;
+    while (!matchingColors) {
+        int correctColor = 0;
+        for (int i = 0; i < 4; i++) {
+            std::array<int, 3> foundPosition = findCubie(yellowCrossCubies[i]);
+            // check if color is on correct place
+            if (cube[foundPosition[0]][foundPosition[1]][foundPosition[2]] ==
+                solvedCube[foundPosition[0]][foundPosition[1]][foundPosition[2]]) {
+                correctColor++;
+            }
+        }
+        if (correctColor == 4) { // check how many cubies are in correct position
+            matchingColors = true;
+            break;
+        } 
+        else if (correctColor == 0) {
+            addToQueue("U");
+        }
+        else if (correctColor == 2 && cube[4][0][1] == "G2" &&
+            ( cube[2][0][1] == "B2" || cube[3][0][1] == "R2") ) {
+            std::string turns[] = { "R", "U", "'R", "U", "R", "U", "U", "'R"};
+            addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+        } 
+        else if (correctColor == 2 && cube[3][0][1] == "R2" &&
+            (cube[2][0][1] == "B2" || cube[1][0][1] == "O2")) {
+            std::string turns[] = { "F", "U", "'F", "U", "F", "U", "U", "'F" };
+            addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+        }
+        else if (correctColor == 2 && cube[2][0][1] == "B2" && cube[1][0][1] == "O2") {
+            std::string turns[] = { "L", "U", "'L", "U", "L", "U", "U", "'L" };
+            addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+        }
+        else if (correctColor == 2 && cube[1][0][1] == "O2" && cube[4][0][1] == "G2") {
+            std::string turns[] = { "B", "U", "'B", "U", "B", "U", "U", "'B" };
+            addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+        }
+    }
 }
+
 
 void cfop::pllPart1()
 {
