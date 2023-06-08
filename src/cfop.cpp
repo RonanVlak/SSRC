@@ -824,6 +824,40 @@ void cfop::pllPart1()
     }
 }
 
-void cfop::pllPart2()
-{
+void cfop::pllPart2() {
+    std::string pllP2Cubies[4] = { "B3", "R3", "G3", "O3" };
+    std::string pllP2YellowCubies[4] = { "Y9", "Y3", "Y1", "Y7" };
+    for (int i = 0; i < 4; i++) {
+        bool cornerCorrect = false;
+        while (!cornerCorrect) {
+            if (cube[2][0][2] == pllP2Cubies[i] ||
+                cube[3][0][0] == pllP2Cubies[i] ||
+                cube[5][0][2] == pllP2Cubies[i]) {
+                bool cornerOriented = false;
+                while (!cornerOriented) {
+                    if (cube[5][2][2] == pllP2YellowCubies[i]) {
+                        cornerOriented = true;
+                    }
+                    else {
+                        std::string turns[] = { "F", "D", "'F", "'D" };
+                        addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                    }
+                }
+                cornerCorrect = true;
+            }   
+            else {
+                addToQueue("U");
+            }
+        }
+    }
+    std::array<int, 3> posY1 = findCubie("Y1");
+    int turnCounter = 0;
+    while (posY1[0] != 5 || posY1[1] != 0 || posY1[2] != 0) {
+        addToQueue("U");
+        turnCounter++;
+        if (turnCounter >= 5) {
+            return; // cannot be solved
+        }
+        posY1 = findCubie("Y1");
+    }
 }
