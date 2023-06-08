@@ -861,3 +861,106 @@ void cfop::pllPart2() {
         posY1 = findCubie("Y1");
     }
 }
+
+void cfop::rotateFaceClockwise(CubeFace face)
+{
+    const int ROWS = 3;
+    const int COLUMNS = 3;
+    const int FACES = 6;
+    // Rotate the given face clockwise
+    std::string tmp[ROWS][COLUMNS];
+    for (int row = 0; row < ROWS; ++row)
+    {
+        for (int col = 0; col < COLUMNS; ++col)
+        {
+            tmp[row][col] = cube[face][COLUMNS - col - 1][row];
+        }
+    }
+    for (int row = 0; row < ROWS; ++row)
+    {
+        for (int col = 0; col < COLUMNS; ++col)
+        {
+            cube[face][row][col] = tmp[row][col];
+        }
+    }
+
+    // Update the surrounding faces
+    std::string tmpRow[COLUMNS];
+    switch (face)
+    {
+    case FRONT:
+        // Rotate adjacent rows on FRONT face
+        for (int col = 0; col < COLUMNS; ++col)
+        {
+            tmpRow[col] = cube[UP][2][col]; // store value from upper cube face
+            cube[UP][2][col] = cube[LEFT][COLUMNS - col - 1][2]; // put value from left face into top face
+            cube[LEFT][COLUMNS - col - 1][2] = cube[DOWN][0][COLUMNS - col - 1];
+            cube[DOWN][0][COLUMNS - col - 1] = cube[RIGHT][col][0];
+            cube[RIGHT][col][0] = tmpRow[col];
+        }
+        break;
+    case BACK:
+        // Rotate adjacent rows on BACK face
+        for (int col = 0; col < COLUMNS; ++col)
+        {
+            tmpRow[col] = cube[UP][0][COLUMNS - col - 1];
+            cube[UP][0][COLUMNS - col - 1] = cube[RIGHT][COLUMNS - col - 1][2]; 
+            cube[RIGHT][COLUMNS - col - 1][2] = cube[DOWN][2][col];
+            cube[DOWN][2][col] = cube[LEFT][col][0];
+            cube[LEFT][col][0] = tmpRow[col];
+        }
+        break;
+    case LEFT:
+        // Rotate adjacent rows on LEFT face
+        for (int row = 0; row < ROWS; ++row)
+        {
+            tmpRow[row] = cube[UP][ROWS - row - 1][0];
+            cube[UP][ROWS - row - 1][0] = cube[BACK][row][COLUMNS - 1];
+            cube[BACK][row][COLUMNS - 1] = cube[DOWN][ROWS - row - 1][0];
+            cube[DOWN][ROWS - row - 1][0] = cube[FRONT][ROWS - row - 1][0];
+            cube[FRONT][ROWS - row - 1][0] = tmpRow[row];
+        }
+        break;
+    case RIGHT:
+        // Rotate adjacent rows on RIGHT face
+        for (int row = 0; row < ROWS; ++row)
+        {
+            tmpRow[row] = cube[UP][row][COLUMNS - 1];
+            cube[UP][row][COLUMNS - 1] = cube[FRONT][row][COLUMNS - 1];
+            cube[FRONT][row][COLUMNS - 1] = cube[DOWN][row][COLUMNS - 1];
+            cube[DOWN][row][COLUMNS - 1] = cube[BACK][ROWS - row - 1][0];
+            cube[BACK][ROWS - row - 1][0] = tmpRow[row];
+        }
+        break;
+    case UP:
+        // Rotate adjacent rows on UP face
+        for (int col = 0; col < COLUMNS; ++col)
+        {
+            tmpRow[col] = cube[LEFT][0][col];
+            cube[LEFT][0][col] = cube[FRONT][0][col];
+            cube[FRONT][0][col] = cube[RIGHT][0][col];
+            cube[RIGHT][0][col] = cube[BACK][0][col];
+            cube[BACK][0][col] = tmpRow[col];
+        }
+        break;
+    case DOWN:
+        // Rotate adjacent rows on DOWN face
+        for (int col = 0; col < COLUMNS; ++col)
+        {
+            tmpRow[col] = cube[LEFT][ROWS - 1][col];
+            cube[LEFT][ROWS - 1][col] = cube[BACK][ROWS - 1][col];
+            cube[BACK][ROWS - 1][col] = cube[RIGHT][ROWS - 1][col];
+            cube[RIGHT][ROWS - 1][col] = cube[FRONT][ROWS - 1][col];
+            cube[FRONT][ROWS - 1][col] = tmpRow[col];
+        }
+        break;
+    }
+}
+
+void cfop::rotateFaceCounterClockwise(CubeFace face)
+{
+    // Rotate the face three times clockwise to achieve a counterclockwise rotation
+    for (int i = 0; i < 3; ++i) {
+        rotateFaceClockwise(face);
+    }
+}
