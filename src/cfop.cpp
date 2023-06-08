@@ -29,12 +29,12 @@ cfop::~cfop()
 void cfop::setCube(std::string _cube[6][3][3]) {
     std::string testCube[6][3][3] =
     {
-{{ "R1", "G8", "W7" }, { "G2", "W5", "W2" }, { "Y3", "R2", "G3" }},
-{{ "B9", "O8", "G7" }, { "O4", "O5", "B4" }, { "R3", "Y2", "B3" }},
-{{ "R9", "B6", "B7" }, { "O6", "B5", "R8" }, { "Y9", "W8", "G9" }},
-{{ "O9", "Y4", "O3" }, { "W6", "R5", "G4" }, { "O7", "B8", "Y1" }},
-{{ "B1", "B2", "R7" }, { "R6", "G5", "G6" }, { "O1", "Y6", "G1" }},
-{{ "W3", "Y8", "Y7" }, { "W4", "Y5", "O2" }, { "W9", "R4", "W1" }},
+{{ "G9", "R2", "B7" }, { "Y4", "W5", "W2" }, { "R7", "Y2", "O3" }},
+{{ "G1", "R4", "O1" }, { "G4", "O5", "W4" }, { "B9", "O2", "O7" }},
+{{ "Y1", "R8", "R9" }, { "O8", "B5", "W8" }, { "W7", "Y6", "W1" }},
+{{ "W9", "O6", "Y9" }, { "G8", "R5", "G6" }, { "O9", "B8", "Y7" }},
+{{ "B3", "B2", "R3" }, { "O4", "G5", "R6" }, { "B1", "G2", "W3" }},
+{{ "Y3", "Y8", "R1" }, { "B6", "Y5", "B4" }, { "G3", "W6", "G7" }},
     };;
 
 	for (int i = 0; i < 6; ++i) {
@@ -60,8 +60,11 @@ void cfop::setCubie(std::string cubie, int position[3]) {
 * "B" = back
 * ' indicates counter clockwise
 */
+int nrMoves = 0;
 void cfop::addToQueue(const std::string& turn) {
-	solveQueue.push_back(turn);
+    nrMoves++;
+    std::cout << "Move " << nrMoves << ":" << turn << std::endl;
+    solveQueue.push_back(turn);
     if (turn == "F") { rotateFaceClockwise(FRONT); }
     else if (turn == "'F") { rotateFaceCounterClockwise(FRONT); }
     else if (turn == "L") { rotateFaceClockwise(LEFT); }
@@ -76,7 +79,6 @@ void cfop::addToQueue(const std::string& turn) {
     else if (turn == "'D") { rotateFaceCounterClockwise(DOWN); }
     printCube();
 }
-int nrMoves = 0;
 void cfop::addToQueue(const std::string turn[], size_t size) {
     for (size_t i = 0; i < size; i++) {
         nrMoves++;
@@ -109,6 +111,32 @@ void cfop::printQueue() {
         std::cout << value << ",";
     }
     std::cout << std::endl;
+}
+
+void cfop::simplifyQueue() {
+    auto queueItem = solveQueue.begin();
+    while (std::distance(queueItem, solveQueue.end()) >= 3) {
+        if (*queueItem == *std::next(queueItem) && *queueItem == *std::next(queueItem, 2)) {
+            // Remove two elements and insert one movement in the opposite direction
+            if (*queueItem == "U") { solveQueue.insert(queueItem, "'U"); }
+            if (*queueItem == "'U") { solveQueue.insert(queueItem, "U"); }
+            if (*queueItem == "D") { solveQueue.insert(queueItem, "'D"); }
+            if (*queueItem == "'D") { solveQueue.insert(queueItem, "D"); }
+            if (*queueItem == "L") { solveQueue.insert(queueItem, "'L"); }
+            if (*queueItem == "'L") { solveQueue.insert(queueItem, "L"); }
+            if (*queueItem == "F") { solveQueue.insert(queueItem, "'F"); }
+            if (*queueItem == "'F") { solveQueue.insert(queueItem, "F"); }
+            if (*queueItem == "R") { solveQueue.insert(queueItem, "'R"); }
+            if (*queueItem == "'R") { solveQueue.insert(queueItem, "R"); }
+            if (*queueItem == "B") { solveQueue.insert(queueItem, "'B"); }
+            if (*queueItem == "'B") { solveQueue.insert(queueItem, "B"); }
+            queueItem = solveQueue.erase(queueItem,  
+                std::next(queueItem, 3));
+        }
+        else {
+            ++queueItem;
+        }
+    }
 }
 
 void cfop::printCube() {
@@ -158,7 +186,30 @@ void cfop::solveCube()
     std::cout << "PLLPART1 COMPLETED. START PLLPART2." << std::endl;
     pllPart2();
     printCube();
-    std::cout << "PLLPART2 COMPLETED. CUBE SOLVED." << std::endl;
+    std::cout << "PLLPART2 COMPLETED. CHECKING CUBE..." << std::endl;
+    checkCubeSolved();
+}
+
+void cfop::checkCubeSolved() {
+    bool cubeValid = true;
+
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++) {
+                if (cube[i][j][k] != solvedCube[i][j][k]) {
+                    cubeValid = false;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (cubeValid) {
+        std::cout << "Cube is verified and SOLVED." << std::endl;
+    }
+    else {
+        std::cout << "The program was not able to solve this cube." << std::endl;
+    }
 }
 
 void cfop::cross()
@@ -629,7 +680,7 @@ void cfop::secondLayer() {
                         addToQueue("U");
                     break;
                     case 3: {
-                        std::string turns[] = { "U", "R", "U", "'R", "'U", "'B", "'U", "B", "U" };
+                        std::string turns[] = { "U", "L", "U", "'L", "'U", "'B", "'U", "B", "U" };
                         addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                         break;
                     }
@@ -642,7 +693,7 @@ void cfop::secondLayer() {
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
                 else if (foundPosition[1] == 1 && foundPosition[2] == 2) { // move to top face
-                    std::string turns[] = { "U", "R", "U", "'R", "'U", "'B", "'U", "B", "U" };
+                    std::string turns[] = { "U", "L", "U", "'L", "'U", "'B", "'U", "B", "U" };
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
                 break;
@@ -744,7 +795,7 @@ void cfop::yellowCrossColors() {
             matchingColors = true;
             break;
         } 
-        else if (correctColor == 0) {
+        else if (correctColor == 0 || correctColor == 1) {
             addToQueue("U");
         }
         else if (correctColor == 2 && cube[4][0][1] == "G2" &&
@@ -774,45 +825,68 @@ void cfop::yellowCrossColors() {
 
 void cfop::pllPart1()
 {
+    int unsolvableCounter = 0;
     std::string pllP1Cubies[4] = { "O1", "B1", "R1", "G1" };
     bool cornersInPlace = false;
     while (!cornersInPlace) {
         int correctCorners = 0;
         bool frontCorner = false;
+        bool leftCorner = false;
+        bool rightCorner = false;
+        bool backCorner = false;
         if (cube[1][0][0] == "O1" ||
             cube[1][0][0] == "G3" ||
             cube[1][0][0] == "Y1") {
             correctCorners++;
+            backCorner = true;
         }
         if (cube[2][0][0] == "B1" ||
             cube[2][0][0] == "O3" ||
             cube[2][0][0] == "Y7") {
             correctCorners++;
-            frontCorner = true;
+            leftCorner = true;
 
         }
         if (cube[3][0][0] == "R1" ||
             cube[3][0][0] == "B3" ||
             cube[3][0][0] == "Y9") {
             correctCorners++;
+            frontCorner = true;
         }
         if (cube[4][0][0] == "G1" ||
             cube[4][0][0] == "R3" ||
             cube[4][0][0] == "Y3") {
             correctCorners++;
+            rightCorner = true;
         }
-        if (frontCorner && correctCorners != 2 && correctCorners != 4) {
+        // check how many corners are in correct place
+        // if not all 4 are in correct position do the corresponding moves
+        if (correctCorners == 4) {
+            cornersInPlace = true;
+            unsolvableCounter = 0;
+            break;
+        }
+        else if (leftCorner && correctCorners != 2 && correctCorners != 4) {
+            std::string turns[] = { "U", "F", "'U", "'B", "U", "'F", "'U", "B" };
+            addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+        }
+        else if (frontCorner && correctCorners != 2 && correctCorners != 4) {
             std::string turns[] = { "U", "R", "'U", "'L", "U", "'R", "'U", "L" };
             addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
         }
-        else if (correctCorners == 4) {
-            cornersInPlace = true;
-            break;
+        else if (rightCorner && correctCorners != 2 && correctCorners != 4) {
+            std::string turns[] = { "U", "B", "'U", "'F", "U", "'B", "'U", "F" };
+            addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
         }
-        else if (correctCorners == 0 || correctCorners == 1 || correctCorners == 3) {
-            addToQueue("U");
+        else if (backCorner && correctCorners != 2 && correctCorners != 4) {
+            std::string turns[] = { "U", "L", "'U", "'R", "U", "'L", "'U", "R" };
+            addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
         }
-        else if (correctCorners == 2) {
+        else {// if (correctCorners == 0 || correctCorners == 1 || correctCorners == 3) {
+            std::string turns[] = { "U", "R", "'U", "'L", "U", "'R", "'U", "L" };
+            addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+        }
+        if (correctCorners == 2) {
             std::cout << "panic, unsolvable cube" << std::endl;
             return;
         }
