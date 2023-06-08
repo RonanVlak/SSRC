@@ -688,9 +688,45 @@ void cfop::secondLayer() {
     }
 }
 
-void cfop::oll()
+
+void cfop::oll() // create yellow cross
 {
+    std::string ollCubies[4] = { "Y2", "Y4", "Y6", "Y8" };
+    bool yellowCross = false;
+    while (!yellowCross) {
+        int correctYellow = 0;
+        for (int i = 0; i < 4; i++) {
+            std::array<int, 3> foundPosition = findCubie(ollCubies[i]);
+            if (foundPosition[0] == 5) { // check if yellow cubie is on yellow face
+                correctYellow++;
+            }
+        }
+        if (correctYellow == 4) { // check how many cubies are in correct position
+            yellowCross = true;
+            break;
+        }
+        // get correct pattern on top of cube
+        std::string blueCubie = cube[2][0][1].substr(0, 1);
+        std::string redCubie = cube[3][0][1].substr(0, 1);
+
+        if ((correctYellow == 2 && blueCubie == "Y" && "Y") || 
+            (correctYellow == 2 && blueCubie == "Y" && redCubie != "Y") ||
+            (correctYellow == 0)) {
+            std::string turns[] = { "F", "R", "U", "'R", "'U", "'F" };
+            addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+        }
+        else {
+            addToQueue("U");
+        }
+
+        if (correctYellow == 1 || correctYellow == 3) {
+            // panic
+            std::cout << "Unsolvable Cube." << std::endl;
+            return;
+        }
+    }
 }
+
 
 void cfop::yellowCrossColors()
 {
