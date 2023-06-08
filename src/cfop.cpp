@@ -500,6 +500,193 @@ void cfop::firstLayer() {
     }
 }
 
+void cfop::secondLayer() {
+    std::string secondLayerCubies[4] = { "O6", "B6", "R6", "G6" };
+    for (int i = 0; i < 4; i++) {
+        bool correctPlace = false;
+        while (!correctPlace) {
+            // find position of cubie
+            std::array<int, 3> foundPosition = findCubie(secondLayerCubies[i]);
+            // check if the found position is the correct one by comparing it to the solved state of the cube
+            if (cube[foundPosition[0]][foundPosition[1]][foundPosition[2]] ==
+                solvedCube[foundPosition[0]][foundPosition[1]][foundPosition[2]]) {
+                correctPlace = true;
+                break;
+            }
+
+            switch (foundPosition[0]) {
+            case 0: // white face
+                // error, should not be possible
+                return;
+                break;
+            case 1:
+                if (foundPosition[1] == 0) {
+                    switch (i) {
+                    case 0: {
+                        std::string turns[] = { "U", "F", "U", "'F", "'U", "'L", "'U", "L", "U" };
+                        addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                        break;
+                    }
+                    case 1:
+                        addToQueue("'U");
+                        break;
+                    case 2:
+                        addToQueue("U");
+                        addToQueue("U");
+                        break;
+                    case 3:
+                        addToQueue("U");
+                        break;
+                    default: // unknown cubie found
+                        break;
+                    }
+                }
+                else if (foundPosition[1] == 1 && foundPosition[2] == 0) { // move to top face
+                    std::string turns[] = { "'U", "'B", "'U", "B", "U", "L", "U", "'L", "'U", };
+                    addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                }
+                else if (foundPosition[1] == 1 && foundPosition[2] == 2) { // move to top face
+                    std::string turns[] = { "U", "F", "U", "'F", "'U", "'L", "'U", "L", "U" };
+                    addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                }
+                break;
+            case 2:
+                if (foundPosition[1] == 0) {
+                    switch (i) {
+                    case 0: 
+                        addToQueue("U");
+                        break;
+                    case 1:
+                        {
+                            std::string turns[] = { "U", "R", "U", "'R", "'U", "'F", "'U", "F", "U" };
+                            addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                            break;
+                        }
+                    case 2:
+                        addToQueue("'U");
+                        break;
+                    case 3:
+                        addToQueue("U");
+                        addToQueue("U");
+                        break;
+                    default: // unknown cubie found
+                        break;
+                    }
+                }
+                else if (foundPosition[1] == 1 && foundPosition[2] == 0) { // move to top face
+                    std::string turns[] = { "'U", "'F", "'U", "F", "U", "R", "U", "'R", "'U", };
+                    addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                }
+                else if (foundPosition[1] == 1 && foundPosition[2] == 2) { // move to top face
+                    std::string turns[] = { "'U", "'R", "'U", "R", "U", "B", "U", "'B", "'U", };
+                    addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                }
+                break;
+            case 3:
+                if (foundPosition[1] == 0) {
+                    switch (i) {
+                    case 0:
+                        addToQueue("U");
+                        addToQueue("U");
+                        break;
+                    case 1:
+                        addToQueue("U");
+                        break;
+                    case 2:
+                        {
+                            std::string turns[] = { "U", "B", "U", "'B", "'U", "'R", "'U", "R", "U" };
+                            addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                            break;
+                        }
+                    case 3:
+                        addToQueue("'U");
+                        break;
+                    default: // unknown cubie found
+                        break;
+                    }
+                }
+                else if (foundPosition[1] == 1 && foundPosition[2] == 0) { // move to top face
+                    std::string turns[] = { "'U", "'F", "'U", "F", "U", "R", "U", "'R", "'U", };
+                    addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                }
+                else if (foundPosition[1] == 1 && foundPosition[2] == 2) { // move to top face
+                    std::string turns[] = { "'U", "'R", "'U", "R", "U", "B", "U", "'B", "'U", };
+                    addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                }
+                break;
+            case 4:
+                if (foundPosition[1] == 0) {
+                    switch (i) {
+                    case 0:
+                        addToQueue("'U");
+                        break;
+                    case 1:
+                        addToQueue("U");
+                        addToQueue("U");
+                        break;
+                    case 2:
+                        addToQueue("U");
+                    break;
+                    case 3: {
+                        std::string turns[] = { "U", "R", "U", "'R", "'U", "'B", "'U", "B", "U" };
+                        addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                        break;
+                    }
+                    default: // unknown cubie found
+                        break;
+                    }
+                }
+                else if (foundPosition[1] == 1 && foundPosition[2] == 0) { // move to top face
+                    std::string turns[] = { "'U", "'R", "'U", "R", "U", "B", "U", "'B", "'U", };
+                    addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                }
+                else if (foundPosition[1] == 1 && foundPosition[2] == 2) { // move to top face
+                    std::string turns[] = { "U", "R", "U", "'R", "'U", "'B", "'U", "B", "U" };
+                    addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                }
+                break;
+            case 5:
+                if (i == 0) {               // O6
+                    if (foundPosition[1] == 2 && foundPosition[2] == 1) {
+                        std::string turns[] = { "'U", "'L", "'U", "L", "U", "F", "U", "'F", "'U" };
+                        addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                    }
+                    else {
+                        addToQueue("U");
+                    }
+                } else if (i == 1) {        // B6
+                    if (foundPosition[1] == 1 && foundPosition[2] == 2) {
+                        std::string turns[] = { "'U", "'F", "'U", "F", "U", "R", "U", "'R", "'U", };
+                        addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                    }
+                    else {
+                        addToQueue("U");
+                    }
+                } else if (i == 2) {        // R6
+                    if (foundPosition[1] == 0 && foundPosition[2] == 1) {
+                        std::string turns[] = { "'U", "'R", "'U", "R", "U", "B", "U", "'B", "'U", };
+                        addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                    }
+                    else {
+                        addToQueue("U");
+                    }
+                } else if (i == 3) {        // G6
+                    if (foundPosition[1] == 1 && foundPosition[2] == 0) {
+                        std::string turns[] = { "'U", "'B", "'U", "B", "U", "L", "U", "'L", "'U", };
+                        addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
+                    }
+                    else {
+                        addToQueue("U");
+                    }
+                }
+                break;
+            default:
+                // fault in searching
+                break;
+            }
+        }
+    }
+}
 
 void cfop::oll()
 {
