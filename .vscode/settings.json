@@ -1,4 +1,5 @@
 {
+    "cmake.configureOnOpen": false,
     "files.associations": {
         "array": "cpp",
         "atomic": "cpp",
@@ -48,6 +49,7 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "iostream": "cpp"
     }
 }
