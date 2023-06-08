@@ -62,6 +62,35 @@ void cfop::setCubie(std::string cubie, int position[3]) {
 	cube[position[0]][position[1]][position[2]] = cubie;
 }
 
+void cfop::shuffleCube() 
+{
+    std::cout << std::endl << "Shuffling cube..." << std::endl;
+    // start with a solved cube configuration
+    std::string cube[6][3][3] =
+    { {   { "W1", "W2", "W3" }, { "W4", "W5", "W6" }, { "W7", "W8", "W9" }  },
+      {   { "O1", "O2", "O3" }, { "O4", "O5", "O6" }, { "O7", "O8", "O9" }  },
+      {   { "B1", "B2", "B3" }, { "B4", "B5", "B6" }, { "B7", "B8", "B9" }  },
+      {   { "R1", "R2", "R3" }, { "R4", "R5", "R6" }, { "R7", "R8", "R9" }  },
+      {   { "G1", "G2", "G3" }, { "G4", "G5", "G6" }, { "G7", "G8", "G9" }  },
+      {   { "Y1", "Y2", "Y3" }, { "Y4", "Y5", "Y6" }, { "Y7", "Y8", "Y9" }  },
+    };
+    setCube(cube);
+    srand(time(0));
+    //int rotateNum = rand() % 20;
+    int rotateNum = 50;
+    for (int i = 0; i < rotateNum; i++) {
+        int dir = rand() % 1; // decide clockwise or counterclockwise
+        if (dir == 0) {
+            rotateFaceClockwise(static_cast<CubeFace>(rand() % 5));	// randomly decide which face to turn
+        }
+        else if (dir == 1) {
+            rotateFaceCounterClockwise(static_cast<CubeFace>(rand() % 5)); // randomly decide which face to turn
+        }
+    }
+
+    std::cout << "Cube has been shuffled:" << std::endl;
+}
+
 /*
 * fill solveQueue with the next symbols:
 * "U" = up

@@ -38,6 +38,7 @@ public:
 
 	void setCube(std::string (&_cube)[6][3][3]);
 	void setCubie(std::string cubie, int position[3]);
+	void shuffleCube();
 
 	void addToQueue(const std::string& turn);
 	void addToQueue(const std::string turn[], size_t size);

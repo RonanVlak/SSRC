@@ -14,6 +14,10 @@ std::string cube[6][3][3] = =
 
 algorithm.setCube(cube);
 ```
+To generate a randomly shuffled cube:
+```cpp
+algorithm.shuffleCube();
+```
 To start solving the cube use this method: 
 ```cpp
 algorithm.solveCube();
