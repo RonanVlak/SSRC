@@ -18,7 +18,7 @@ public:
 	};
 
 	std::list<std::string> solveQueue;
-
+	int nrMoves = 0;
 	const std::string solvedCube[6][3][3] =
 	{ {   { "W1", "W2", "W3" }, { "W4", "W5", "W6" }, { "W7", "W8", "W9" }  },
 	  {   { "O1", "O2", "O3" }, { "O4", "O5", "O6" }, { "O7", "O8", "O9" }  },
@@ -56,5 +56,8 @@ public:
 	void yellowCrossColors();
 	void pllPart1();
 	void pllPart2();
+
+	void checkCubeSolved();
+	void simplifyQueue();
 };
 

@@ -132,6 +132,7 @@ void cfop::simplifyQueue() {
             if (*queueItem == "'B") { solveQueue.insert(queueItem, "B"); }
             queueItem = solveQueue.erase(queueItem,  
                 std::next(queueItem, 3));
+            nrMoves--;
         }
         else {
             ++queueItem;
