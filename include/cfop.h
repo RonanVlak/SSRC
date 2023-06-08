@@ -29,19 +29,21 @@ public:
 	};
 
 	std::string cube[6][3][3];
+	bool allowPrintCube = true;
 
 public:
 	cfop();
 	cfop(std::string _cube[6][3][3]);
 	~cfop();
 
-	void setCube(std::string _cube[6][3][3]);
+	void setCube(std::string (&_cube)[6][3][3]);
 	void setCubie(std::string cubie, int position[3]);
 
 	void addToQueue(const std::string& turn);
 	void addToQueue(const std::string turn[], size_t size);
 	void printQueue();
-	void printCube(); 
+	void printCube();
+	void printCubeInFormat();
 
 	std::array<int, 3> findCubie(std::string cubie);
 
@@ -57,7 +59,7 @@ public:
 	void pllPart1();
 	void pllPart2();
 
-	void checkCubeSolved();
+	bool checkCubeSolved();
 	void simplifyQueue();
 };
 

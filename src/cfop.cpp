@@ -26,15 +26,26 @@ cfop::~cfop()
 {
 }
 
-void cfop::setCube(std::string _cube[6][3][3]) {
+void cfop::setCube(std::string (&_cube)[6][3][3]) {
+    if (_cube != NULL) {
+        for (int i = 0; i < 6; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    cube[i][j][k] = _cube[i][j][k];
+                }
+            }
+        }
+        return;
+    }
+
     std::string testCube[6][3][3] =
     {
-{{ "G9", "R2", "B7" }, { "Y4", "W5", "W2" }, { "R7", "Y2", "O3" }},
-{{ "G1", "R4", "O1" }, { "G4", "O5", "W4" }, { "B9", "O2", "O7" }},
-{{ "Y1", "R8", "R9" }, { "O8", "B5", "W8" }, { "W7", "Y6", "W1" }},
-{{ "W9", "O6", "Y9" }, { "G8", "R5", "G6" }, { "O9", "B8", "Y7" }},
-{{ "B3", "B2", "R3" }, { "O4", "G5", "R6" }, { "B1", "G2", "W3" }},
-{{ "Y3", "Y8", "R1" }, { "B6", "Y5", "B4" }, { "G3", "W6", "G7" }},
+        {{ "G1", "Y8", "O7" }, { "W8", "W5", "Y4" }, { "R7", "B6", "W9" }},
+        {{ "B3", "B4", "O3" }, { "G6", "O5", "B8" }, { "B9", "G8", "R3" }},
+        {{ "B1", "G2", "B7" }, { "W2", "B5", "R2" }, { "Y3", "B2", "W7" }},
+        {{ "O9", "W4", "G3" }, { "Y6", "R5", "R6" }, { "G9", "O2", "R9" }},
+        {{ "O1", "R8", "Y9" }, { "G4", "G5", "O4" }, { "G7", "R4", "W3" }},
+        {{ "R1", "W6", "Y1" }, { "O6", "Y5", "O8" }, { "Y7", "Y2", "W1" }},
     };;
 
 	for (int i = 0; i < 6; ++i) {
@@ -46,6 +57,7 @@ void cfop::setCube(std::string _cube[6][3][3]) {
 	}
 }
 
+// set 1 cubie within the cube
 void cfop::setCubie(std::string cubie, int position[3]) {
 	cube[position[0]][position[1]][position[2]] = cubie;
 }
@@ -60,10 +72,11 @@ void cfop::setCubie(std::string cubie, int position[3]) {
 * "B" = back
 * ' indicates counter clockwise
 */
-int nrMoves = 0;
+
+// add 1 move to the queue
 void cfop::addToQueue(const std::string& turn) {
     nrMoves++;
-    std::cout << "Move " << nrMoves << ":" << turn << std::endl;
+    //std::cout << "Move " << nrMoves << ":" << turn << std::endl;
     solveQueue.push_back(turn);
     if (turn == "F") { rotateFaceClockwise(FRONT); }
     else if (turn == "'F") { rotateFaceCounterClockwise(FRONT); }
@@ -77,12 +90,14 @@ void cfop::addToQueue(const std::string& turn) {
     else if (turn == "'U") { rotateFaceCounterClockwise(UP); }
     else if (turn == "D") { rotateFaceClockwise(DOWN); }
     else if (turn == "'D") { rotateFaceCounterClockwise(DOWN); }
-    printCube();
+    if (allowPrintCube) { printCube(); }
 }
+
+// add a list of moves to the queue
 void cfop::addToQueue(const std::string turn[], size_t size) {
     for (size_t i = 0; i < size; i++) {
         nrMoves++;
-        std::cout << "Move " << nrMoves << ":" << turn[i] << std::endl;
+        //std::cout << "Move " << nrMoves << ":" << turn[i] << std::endl;
         solveQueue.push_back(turn[i]);
 
         if (turn[i] == "F") { rotateFaceClockwise(FRONT); }
@@ -97,11 +112,12 @@ void cfop::addToQueue(const std::string turn[], size_t size) {
         else if (turn[i] == "'U") { rotateFaceCounterClockwise(UP); }
         else if (turn[i] == "D") { rotateFaceClockwise(DOWN); }
         else if (turn[i] == "'D") { rotateFaceCounterClockwise(DOWN); }
-        printCube();
+        if (allowPrintCube) { printCube(); }
     }
    // delete[] turn;
 }
 
+// print the queue
 void cfop::printQueue() {
     if (solveQueue.empty()) {
         std::cout << "The list is empty." << std::endl;
@@ -113,6 +129,7 @@ void cfop::printQueue() {
     std::cout << std::endl;
 }
 
+// simplify the queue, 3 the same consecutive are simplified to 1 move the other way around
 void cfop::simplifyQueue() {
     auto queueItem = solveQueue.begin();
     while (std::distance(queueItem, solveQueue.end()) >= 3) {
@@ -140,6 +157,7 @@ void cfop::simplifyQueue() {
     }
 }
 
+// print the cube in a 3x3 format, each side will be printed individually
 void cfop::printCube() {
     for (int i = 0; i < 6; ++i) {
         for (int j = 0; j < 3; ++j) {
@@ -152,6 +170,30 @@ void cfop::printCube() {
     }
 }
 
+// print the cube in format to use in the code
+void cfop::printCubeInFormat() {
+    std::cout << "std::string cube[6][3][3] = " << std::endl;
+    std::cout << "{" << std::endl;
+    for (int i = 0; i < 6; ++i)
+    {
+        std::cout << "{";
+        for (int x = 0; x < 3; ++x)
+        {
+            std::cout << "{ \"" << cube[i][x][0] << "\", \"" << cube[i][x][1] << "\", \"" << cube[i][x][2] << "\" }";
+            if (x == 0 || x == 1) {
+                std::cout << ", ";
+            }
+        }
+        std::cout << "},";
+        std::cout << std::endl;
+
+    }
+    std::cout << "};";
+    std::cout << std::endl;
+    return;
+}
+
+// find a certain cubie within the cube
 std::array<int, 3> cfop::findCubie(std::string cubie) {
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 3; j++) {
@@ -162,10 +204,12 @@ std::array<int, 3> cfop::findCubie(std::string cubie) {
             }
         }
     }
+    std::cout << "Error in findCubie. Cubie has not been found in the cube." << std::endl; 
     return { 6, 6, 6 };
 }
 
-void cfop::solveCube()
+// solve the cube following each phase of the algorithm
+void cfop::solveCube()  
 {
 	cross();
     printCube();
@@ -191,7 +235,8 @@ void cfop::solveCube()
     checkCubeSolved();
 }
 
-void cfop::checkCubeSolved() {
+// check if the cube has been entirely solved
+bool cfop::checkCubeSolved() {
     bool cubeValid = true;
 
     for (int i = 0; i < 6; i++) {
@@ -211,46 +256,42 @@ void cfop::checkCubeSolved() {
     else {
         std::cout << "The program was not able to solve this cube." << std::endl;
     }
+    return cubeValid;
 }
 
+// make a white cross on the bottom of the cube
 void cfop::cross()
 {
-    // reposition W2, W4, W6 and W8 to the correct place
-    std::string crossCubies[4] = { "W2", "W4", "W6", "W8" };
+    std::string crossCubies[4] = { "W2", "W4", "W6", "W8" }; // cubies to be found during this phase
     for (int i = 0; i < 4; i++) {
         bool correctPlace = false;
         while (!correctPlace) {
-            // find position of cubie
+            // find position of cubie, check if it is in correct position
             std::array<int, 3> foundPosition = findCubie(crossCubies[i]);
-            // check if the found position is the correct one by comparing it to the solved state of the cube
-            //try{
             if (cube[foundPosition[0]][foundPosition[1]][foundPosition[2]] ==
                 solvedCube[foundPosition[0]][foundPosition[1]][foundPosition[2]]) {
                 correctPlace = true;
                 break;
             }
-            //}
-            //catch(){}
 
             switch (foundPosition[0]) {
             case 0: // white face
                 // on the correct face but not correct place
-                if (i == 0) { // first cubie can be turned to correct face
-                    addToQueue("D"); // keep turning 'down' clockwise until correct place found
+                if (i == 0) { // first cubie can be turned to correct position on white face
+                    addToQueue("D"); // keep turning 'down' face clockwise until correct place found
                     break;
                 }
+
+                // turn the cubie to the top side
                 if (foundPosition[2] == 0) {
-                    //turn left side twice, makes sure that the cubie is on the top side
                     std::string turns[] = { "L", "L" };
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
                 else if (foundPosition[2] == 1 && foundPosition[1] == 2) {
-                    //turn back side twice, makes sure that the cubie is on the top side
                     std::string turns[] = { "B", "B" };
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
                 else if (foundPosition[2] == 2) {
-                    //turn right side twice, makes sure that the cubie is on the top side
                     std::string turns[] = { "R", "R" };
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
@@ -287,7 +328,7 @@ void cfop::cross()
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
                 else if (foundPosition[2] == 2 && foundPosition[1] == 1) {
-                    std::string turns[] = { "R", "'U", "R" };
+                    std::string turns[] = { "R", "'U", "'R" };
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
                 break;
@@ -297,7 +338,7 @@ void cfop::cross()
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
                 else if (foundPosition[2] == 1 && foundPosition[1] == 2) {
-                    std::string turns[] = { "R", "B", "'U", "'B", "'R" };
+                    std::string turns[] = { "'R", "B", "'U", "'B", "R" };
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
                 else if (foundPosition[2] == 0 && foundPosition[1] == 1) {
@@ -328,7 +369,8 @@ void cfop::cross()
                 }
                 break;
             case 5:
-                // it's on the top face, turn to correct position, then push it in correct position.
+                // it's on the top face, turn to correct position on top face, 
+                // then push it in correct position on down face.
                 // first check which cubie is currently being put in position
                 switch (i) {
                 case 0: // cubie W2
@@ -385,8 +427,10 @@ void cfop::cross()
     }
 }
 
+// fix the first layer of the cube, the entire down (white) face
+// and numbers 7,8,9 for faces left,front,right,back
 void cfop::firstLayer() {
-    std::string firstLayerCubies[4] = { "W1", "W3", "W7", "W9" };
+    std::string firstLayerCubies[4] = { "W1", "W3", "W7", "W9" }; // cubies to be found during this phase
     for (int i = 0; i < 4; i++) {
         bool correctPlace = false;
         while (!correctPlace) {
@@ -547,14 +591,18 @@ void cfop::firstLayer() {
                 break;
             default:
                 // fault in searching
+                std::cout << "Error in phase First Layer, unknown result in findCubie." << std::endl << std::endl;
+                return;
                 break;
             }
         }
     }
 }
 
+// fix the second layer of the cube
+// numbers 4 & 6 for faces left,front,right,back
 void cfop::secondLayer() {
-    std::string secondLayerCubies[4] = { "O6", "B6", "R6", "G6" };
+    std::string secondLayerCubies[4] = { "O6", "B6", "R6", "G6" };  // cubies to be found during this phase
     for (int i = 0; i < 4; i++) {
         bool correctPlace = false;
         while (!correctPlace) {
@@ -567,20 +615,23 @@ void cfop::secondLayer() {
                 break;
             }
 
+            // when a cubie is found on a place it shouldn't be, move it to top layer
+            // then insert in correct place on second layer
             switch (foundPosition[0]) {
             case 0: // white face
                 // error, should not be possible
+                std::cout << "Error in phase Second Layer, cubie is found on white layer." << std::endl;
                 return;
                 break;
-            case 1:
+            case 1: // left face
                 if (foundPosition[1] == 0) {
                     switch (i) {
-                    case 0: {
-                        std::string turns[] = { "U", "F", "U", "'F", "'U", "'L", "'U", "L", "U" };
+                    case 0: {// move into correct position
+                        std::string turns[] = { "U", "F", "U", "'F", "'U", "'L", "'U", "L", "U" }; 
                         addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                         break;
                     }
-                    case 1:
+                    case 1: // move to correct position on top face
                         addToQueue("'U");
                         break;
                     case 2:
@@ -591,6 +642,7 @@ void cfop::secondLayer() {
                         addToQueue("U");
                         break;
                     default: // unknown cubie found
+                        std::cout << "Error in phase Second Layer, invalid cubie found." << std::endl; 
                         break;
                     }
                 }
@@ -603,13 +655,13 @@ void cfop::secondLayer() {
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
                 break;
-            case 2:
+            case 2: // front face
                 if (foundPosition[1] == 0) {
                     switch (i) {
                     case 0: 
                         addToQueue("U");
                         break;
-                    case 1:
+                    case 1: // move into correct position
                         {
                             std::string turns[] = { "U", "R", "U", "'R", "'U", "'F", "'U", "F", "U" };
                             addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
@@ -623,15 +675,16 @@ void cfop::secondLayer() {
                         addToQueue("U");
                         break;
                     default: // unknown cubie found
+                        std::cout << "Error in phase Second Layer, invalid cubie found." << std::endl;
                         break;
                     }
                 }
                 else if (foundPosition[1] == 1 && foundPosition[2] == 0) { // move to top face
-                    std::string turns[] = { "'U", "'F", "'U", "F", "U", "R", "U", "'R", "'U", };
+                    std::string turns[] = { "U", "F", "U", "'F", "'U", "'L", "'U", "L", "U" };
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
                 else if (foundPosition[1] == 1 && foundPosition[2] == 2) { // move to top face
-                    std::string turns[] = { "'U", "'R", "'U", "R", "U", "B", "U", "'B", "'U", };
+                    std::string turns[] = { "'U", "R", "U", "'R", "'U", "'F", "'U", "F", "U" };
                     addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
                 }
                 break;
@@ -655,6 +708,7 @@ void cfop::secondLayer() {
                         addToQueue("'U");
                         break;
                     default: // unknown cubie found
+                        std::cout << "Error in phase Second Layer, invalid cubie found." << std::endl;
                         break;
                     }
                 }
@@ -686,6 +740,7 @@ void cfop::secondLayer() {
                         break;
                     }
                     default: // unknown cubie found
+                        std::cout << "Error in phase Second Layer, invalid cubie found." << std::endl;
                         break;
                     }
                 }
@@ -734,6 +789,7 @@ void cfop::secondLayer() {
                 }
                 break;
             default:
+                std::cout << "Error in phase Second Layer, unknown result in findCubie." << std::endl << std::endl;
                 // fault in searching
                 break;
             }
@@ -741,7 +797,8 @@ void cfop::secondLayer() {
     }
 }
 
-void cfop::oll() // create yellow cross
+// create yellow cross on top face
+void cfop::oll() 
 {
     std::string ollCubies[4] = { "Y2", "Y4", "Y6", "Y8" };
     bool yellowCross = false;
@@ -760,9 +817,10 @@ void cfop::oll() // create yellow cross
         // get correct pattern on top of cube
         std::string blueCubie = cube[2][0][1].substr(0, 1);
         std::string redCubie = cube[3][0][1].substr(0, 1);
-
-        if ((correctYellow == 2 && blueCubie == "Y" && "Y") || 
-            (correctYellow == 2 && blueCubie == "Y" && redCubie != "Y") ||
+        std::string greenCubie = cube[4][0][1].substr(0, 1);
+        
+        if ((correctYellow == 2 && blueCubie == "Y" && redCubie == "Y") ||
+            (correctYellow == 2 && blueCubie == "Y" && greenCubie == "Y") ||
             (correctYellow == 0)) {
             std::string turns[] = { "F", "R", "U", "'R", "'U", "'F" };
             addToQueue(turns, sizeof(turns) / sizeof(turns[0]));
@@ -779,6 +837,7 @@ void cfop::oll() // create yellow cross
     }
 }
 
+// move the yellow cross colors to match the faces beneath it
 void cfop::yellowCrossColors() {
     std::string yellowCrossCubies[4] = { "O2", "B2", "R2", "G2" };
     bool matchingColors = false;
@@ -824,6 +883,7 @@ void cfop::yellowCrossColors() {
     }
 }
 
+// make sure all corners are on their respective part of the cube
 void cfop::pllPart1()
 {
     int unsolvableCounter = 0;
@@ -894,6 +954,7 @@ void cfop::pllPart1()
     }
 }
 
+// after making sure all corners are in the correct position, give them the correct orientation
 void cfop::pllPart2() {
     std::string pllP2Cubies[4] = { "B3", "R3", "G3", "O3" };
     std::string pllP2YellowCubies[4] = { "Y9", "Y3", "Y1", "Y7" };
@@ -932,6 +993,7 @@ void cfop::pllPart2() {
     }
 }
 
+// rotate a give face clockwise, make sure adjacent faces also change in value
 void cfop::rotateFaceClockwise(CubeFace face)
 {
     const int ROWS = 3;
