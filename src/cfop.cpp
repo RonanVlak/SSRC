@@ -64,7 +64,7 @@ void cfop::setCubie(std::string cubie, int position[3]) {
 
 void cfop::shuffleCube() 
 {
-    std::cout << std::endl << "Shuffling cube..." << std::endl;
+   // std::cout << std::endl << "Shuffling cube..." << std::endl;
     // start with a solved cube configuration
     std::string cube[6][3][3] =
     { {   { "W1", "W2", "W3" }, { "W4", "W5", "W6" }, { "W7", "W8", "W9" }  },
@@ -75,20 +75,21 @@ void cfop::shuffleCube()
       {   { "Y1", "Y2", "Y3" }, { "Y4", "Y5", "Y6" }, { "Y7", "Y8", "Y9" }  },
     };
     setCube(cube);
-    srand(time(0));
+  //  srand(time(0));
     //int rotateNum = rand() % 20;
     int rotateNum = 50;
     for (int i = 0; i < rotateNum; i++) {
-        int dir = rand() % 1; // decide clockwise or counterclockwise
+        int dir = random(0, 1); // decide clockwise or counterclockwise
         if (dir == 0) {
-            rotateFaceClockwise(static_cast<CubeFace>(rand() % 5));	// randomly decide which face to turn
+            rotateFaceClockwise(static_cast<CubeFace>(random(0,5)));	// randomly decide which face to turn
         }
         else if (dir == 1) {
-            rotateFaceCounterClockwise(static_cast<CubeFace>(rand() % 5)); // randomly decide which face to turn
+            rotateFaceCounterClockwise(static_cast<CubeFace>(random(0, 5))); // randomly decide which face to turn
         }
     }
 
-    std::cout << "Cube has been shuffled:" << std::endl;
+    //std::cout << "Cube has been shuffled:" << std::endl;
+    Serial.println("The Cube has been shuffled:");
 }
 
 /*
@@ -194,11 +195,15 @@ void cfop::printCube() {
     for (int i = 0; i < 6; ++i) {
         for (int j = 0; j < 3; ++j) {
             for (int k = 0; k < 3; ++k) {
-                std::cout << cube[i][j][k] << " ";
+            //    std::cout << cube[i][j][k] << " ";
+            Serial.print(cube[i][j][k].c_str());
+            Serial.print(" ");
             }
-            std::cout << std::endl;
+           // std::cout << std::endl;
+            Serial.println();
         }
-        std::cout << std::endl;
+        //std::cout << std::endl;
+        Serial.println();
     }
 }
 
@@ -266,7 +271,7 @@ void cfop::solveCube()
     printQueue();
 }
 
-void cfop::checkCubeSolved() {
+bool cfop::checkCubeSolved() {
     bool cubeValid = true;
 
     for (int i = 0; i < 6; i++) {
@@ -288,6 +293,7 @@ void cfop::checkCubeSolved() {
     //    std::cout << "The program was not able to solve this cube." << std::endl;
      Serial.println("The program was not able to solve this cube.");
     }
+    return cubeValid;
 }
 
 

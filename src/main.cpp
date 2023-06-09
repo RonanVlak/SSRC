@@ -30,10 +30,6 @@ void setup() {
   
   pinMode(IN1,OUTPUT);
   pinMode(IN2,OUTPUT);
-  
-  Serial.println("target pos");
- // rCube.shuffleCube();
- // rCube.printCube();
 
   target = 175;
   solveActive = false;
@@ -43,7 +39,9 @@ void loop() {
   
   if (solveActive == 0) {
    // algo.setCube(nullptr);
+    algo.printCube();
     algo.shuffleCube();
+    algo.printCube();
     algo.solveCube();
     solveActive = true;
   }
