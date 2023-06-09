@@ -1,4 +1,5 @@
 # SSRC
+This code was designed to be used with an ESP32 using the platform.io extension for Visual Studio Code.
 
 When the algorithm is initialized it needs a configuration for a starting cube, this can be done as follows:
 ```cpp
